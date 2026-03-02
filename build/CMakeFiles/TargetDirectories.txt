@@ -1,0 +1,3 @@
+/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/build/CMakeFiles/sudoku.dir
+/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/build/CMakeFiles/edit_cache.dir
+/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/build/CMakeFiles/rebuild_cache.dir
