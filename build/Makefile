@@ -129,6 +129,30 @@ sudoku/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sudoku.dir/build.make CMakeFiles/sudoku.dir/build
 .PHONY : sudoku/fast
 
+src/board_state.o: src/board_state.cpp.o
+.PHONY : src/board_state.o
+
+# target to build an object file
+src/board_state.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sudoku.dir/build.make CMakeFiles/sudoku.dir/src/board_state.cpp.o
+.PHONY : src/board_state.cpp.o
+
+src/board_state.i: src/board_state.cpp.i
+.PHONY : src/board_state.i
+
+# target to preprocess a source file
+src/board_state.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sudoku.dir/build.make CMakeFiles/sudoku.dir/src/board_state.cpp.i
+.PHONY : src/board_state.cpp.i
+
+src/board_state.s: src/board_state.cpp.s
+.PHONY : src/board_state.s
+
+# target to generate assembly for a file
+src/board_state.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sudoku.dir/build.make CMakeFiles/sudoku.dir/src/board_state.cpp.s
+.PHONY : src/board_state.cpp.s
+
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -177,6 +201,30 @@ src/puzzle_io.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/sudoku.dir/build.make CMakeFiles/sudoku.dir/src/puzzle_io.cpp.s
 .PHONY : src/puzzle_io.cpp.s
 
+src/solver_core.o: src/solver_core.cpp.o
+.PHONY : src/solver_core.o
+
+# target to build an object file
+src/solver_core.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sudoku.dir/build.make CMakeFiles/sudoku.dir/src/solver_core.cpp.o
+.PHONY : src/solver_core.cpp.o
+
+src/solver_core.i: src/solver_core.cpp.i
+.PHONY : src/solver_core.i
+
+# target to preprocess a source file
+src/solver_core.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sudoku.dir/build.make CMakeFiles/sudoku.dir/src/solver_core.cpp.i
+.PHONY : src/solver_core.cpp.i
+
+src/solver_core.s: src/solver_core.cpp.s
+.PHONY : src/solver_core.s
+
+# target to generate assembly for a file
+src/solver_core.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/sudoku.dir/build.make CMakeFiles/sudoku.dir/src/solver_core.cpp.s
+.PHONY : src/solver_core.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -186,12 +234,18 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... sudoku"
+	@echo "... src/board_state.o"
+	@echo "... src/board_state.i"
+	@echo "... src/board_state.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
 	@echo "... src/puzzle_io.o"
 	@echo "... src/puzzle_io.i"
 	@echo "... src/puzzle_io.s"
+	@echo "... src/solver_core.o"
+	@echo "... src/solver_core.i"
+	@echo "... src/solver_core.s"
 .PHONY : help
 
 

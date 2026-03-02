@@ -9,6 +9,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(sudoku
   src/main.cpp
   src/puzzle_io.cpp
+  src/board_state.cpp
+  src/solver_core.cpp
 )
 
 target_include_directories(sudoku

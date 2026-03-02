@@ -100,19 +100,51 @@ CMakeFiles/sudoku.dir/src/puzzle_io.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sudoku.dir/src/puzzle_io.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/src/puzzle_io.cpp" -o CMakeFiles/sudoku.dir/src/puzzle_io.cpp.s
 
+CMakeFiles/sudoku.dir/src/board_state.cpp.o: CMakeFiles/sudoku.dir/flags.make
+CMakeFiles/sudoku.dir/src/board_state.cpp.o: /Users/ap9031/Desktop/git\ connected\ final\ code/Qlik_Sudoku_Assignment/src/board_state.cpp
+CMakeFiles/sudoku.dir/src/board_state.cpp.o: CMakeFiles/sudoku.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/sudoku.dir/src/board_state.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sudoku.dir/src/board_state.cpp.o -MF CMakeFiles/sudoku.dir/src/board_state.cpp.o.d -o CMakeFiles/sudoku.dir/src/board_state.cpp.o -c "/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/src/board_state.cpp"
+
+CMakeFiles/sudoku.dir/src/board_state.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sudoku.dir/src/board_state.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/src/board_state.cpp" > CMakeFiles/sudoku.dir/src/board_state.cpp.i
+
+CMakeFiles/sudoku.dir/src/board_state.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sudoku.dir/src/board_state.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/src/board_state.cpp" -o CMakeFiles/sudoku.dir/src/board_state.cpp.s
+
+CMakeFiles/sudoku.dir/src/solver_core.cpp.o: CMakeFiles/sudoku.dir/flags.make
+CMakeFiles/sudoku.dir/src/solver_core.cpp.o: /Users/ap9031/Desktop/git\ connected\ final\ code/Qlik_Sudoku_Assignment/src/solver_core.cpp
+CMakeFiles/sudoku.dir/src/solver_core.cpp.o: CMakeFiles/sudoku.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/sudoku.dir/src/solver_core.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/sudoku.dir/src/solver_core.cpp.o -MF CMakeFiles/sudoku.dir/src/solver_core.cpp.o.d -o CMakeFiles/sudoku.dir/src/solver_core.cpp.o -c "/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/src/solver_core.cpp"
+
+CMakeFiles/sudoku.dir/src/solver_core.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/sudoku.dir/src/solver_core.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/src/solver_core.cpp" > CMakeFiles/sudoku.dir/src/solver_core.cpp.i
+
+CMakeFiles/sudoku.dir/src/solver_core.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/sudoku.dir/src/solver_core.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/src/solver_core.cpp" -o CMakeFiles/sudoku.dir/src/solver_core.cpp.s
+
 # Object files for target sudoku
 sudoku_OBJECTS = \
 "CMakeFiles/sudoku.dir/src/main.cpp.o" \
-"CMakeFiles/sudoku.dir/src/puzzle_io.cpp.o"
+"CMakeFiles/sudoku.dir/src/puzzle_io.cpp.o" \
+"CMakeFiles/sudoku.dir/src/board_state.cpp.o" \
+"CMakeFiles/sudoku.dir/src/solver_core.cpp.o"
 
 # External object files for target sudoku
 sudoku_EXTERNAL_OBJECTS =
 
 sudoku: CMakeFiles/sudoku.dir/src/main.cpp.o
 sudoku: CMakeFiles/sudoku.dir/src/puzzle_io.cpp.o
+sudoku: CMakeFiles/sudoku.dir/src/board_state.cpp.o
+sudoku: CMakeFiles/sudoku.dir/src/solver_core.cpp.o
 sudoku: CMakeFiles/sudoku.dir/build.make
 sudoku: CMakeFiles/sudoku.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable sudoku"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir="/Users/ap9031/Desktop/git connected final code/Qlik_Sudoku_Assignment/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable sudoku"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/sudoku.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

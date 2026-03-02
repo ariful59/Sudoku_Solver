@@ -1,8 +1,12 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/sudoku.dir/src/board_state.cpp.o"
+  "CMakeFiles/sudoku.dir/src/board_state.cpp.o.d"
   "CMakeFiles/sudoku.dir/src/main.cpp.o"
   "CMakeFiles/sudoku.dir/src/main.cpp.o.d"
   "CMakeFiles/sudoku.dir/src/puzzle_io.cpp.o"
   "CMakeFiles/sudoku.dir/src/puzzle_io.cpp.o.d"
+  "CMakeFiles/sudoku.dir/src/solver_core.cpp.o"
+  "CMakeFiles/sudoku.dir/src/solver_core.cpp.o.d"
   "sudoku"
   "sudoku.pdb"
 )
