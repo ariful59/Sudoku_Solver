@@ -3,10 +3,10 @@
 
 #include "board_state.h"
 
-namespace assignment_internal {
+namespace sudoku::internal {
 
-void RunHumanTechniques(BoardState &state, AssignmentTechniqueStats &techniques);
+void RunHumanTechniques(BoardState &state, TechniqueStats &techniques);
 
-}  // namespace assignment_internal
+} // namespace sudoku::internal
 
 #endif

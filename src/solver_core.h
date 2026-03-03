@@ -1,15 +1,13 @@
 #ifndef SOLVER_CORE_H
 #define SOLVER_CORE_H
 
-#include "assignment_sudoku.h"
+#include "sudoku.h"
 
-namespace assignment_internal
-{
+namespace sudoku::internal {
 
-    AssignmentSolveResult SolveWithConfig(const AssignmentSudoku &input,
-                                          int solutionLimit = 2,
-                                          bool useHumanTechniques = false);
+SolveResult SolveWithConfig(const Board &input, int solutionLimit = 2,
+                            bool useHumanTechniques = false);
 
-} // namespace assignment_internal
+} // namespace sudoku::internal
 
 #endif

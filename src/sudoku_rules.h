@@ -1,8 +1,10 @@
 #ifndef SUDOKU_RULES_H
 #define SUDOKU_RULES_H
 
-#include "assignment_sudoku.h"
+#include "sudoku.h"
 
-bool IsBoardConsistent(const AssignmentSudoku &board);
+namespace sudoku {
+bool IsBoardConsistent(const Board &board);
+}
 
 #endif

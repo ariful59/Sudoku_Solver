@@ -5,16 +5,21 @@
 #include <optional>
 #include <string>
 
-#include "assignment_sudoku.h"
+#include "sudoku.h"
 
-std::optional<AssignmentDifficulty> ParseDifficulty(const std::string &text);
-const char *DifficultyToString(AssignmentDifficulty difficulty);
-std::string BuildGeneratedPuzzlePath(AssignmentDifficulty difficulty);
+namespace sudoku {
+
+std::optional<Difficulty> ParseDifficulty(const std::string &text);
+std::string DifficultyToString(Difficulty difficulty);
+std::string BuildGeneratedPuzzlePath(Difficulty difficulty);
 void PrintUsage(std::ostream &out);
-void PrintSolveReport(const AssignmentSolveResult &result, double elapsedMs, std::ostream &out);
-void PrintGradeReport(AssignmentDifficulty difficulty, const AssignmentSolveResult &metrics,
+void PrintSolveReport(const SolveResult &result, double elapsedMs,
                       std::ostream &out);
-void PrintGenerateReport(const std::string &outputPath, AssignmentDifficulty target,
-                         AssignmentDifficulty detected, std::ostream &out);
+void PrintGradeReport(Difficulty difficulty, const SolveResult &metrics,
+                      std::ostream &out);
+void PrintGenerateReport(const std::string &outputPath, Difficulty target,
+                         Difficulty detected, std::ostream &out);
+
+} // namespace sudoku
 
 #endif
