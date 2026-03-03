@@ -8,10 +8,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(sudoku
   src/main.cpp
+  src/utility.cpp
   src/puzzle_io.cpp
+  src/sudoku_rules.cpp
   src/board_state.cpp
   src/human_logic.cpp
   src/solver_core.cpp
+  src/generator.cpp
   src/grader.cpp
 )
 

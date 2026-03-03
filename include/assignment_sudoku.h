@@ -21,7 +21,6 @@ enum class AssignmentDifficulty {
     SAMURAI = 3
 };
 
-
 struct AssignmentSolveStats
 {
     int branches = 0;
@@ -47,15 +46,28 @@ struct AssignmentSolveResult
     AssignmentTechniqueStats techniques{};
 };
 
+struct AssignmentGeneratedPuzzle {
+    AssignmentSudoku puzzle{};
+    AssignmentSudoku solution{};
+    AssignmentDifficulty detectedDifficulty = AssignmentDifficulty::EASY;
+};
+
 bool LoadSudokuFromTextFile(const std::string &path, AssignmentSudoku &board,
                             std::string &error);
 bool SaveSudokuToTextFile(const std::string &path,
                           const AssignmentSudoku &board, std::string &error);
 std::string SudokuToPrettyString(const AssignmentSudoku &board);
 bool IsBoardConsistent(const AssignmentSudoku &board);
-AssignmentSolveResult SolveSudokuUnique(const AssignmentSudoku &input);
-std::optional<AssignmentDifficulty> GradeSudoku(const AssignmentSudoku &input,
-                                                AssignmentSolveResult &outMetrics);
-const char *DifficultyToString(AssignmentDifficulty difficulty);
+AssignmentSolveResult SolveSudokuUnique(const AssignmentSudoku &input,
+                                        int solutionLimit = 2,
+                                        bool useHumanTechniques = false);
+bool GenerateSolvedBoard(AssignmentSudoku &outBoard,
+                         bool useHumanTechniques = false);
+std::optional<AssignmentGeneratedPuzzle> GenerateSudoku(
+    AssignmentDifficulty targetDifficulty, bool symmetry180 = false,
+    int attempts = 60);
+std::optional<AssignmentDifficulty> GradeSudoku(
+    const AssignmentSolveResult &metrics);
+
 
 #endif

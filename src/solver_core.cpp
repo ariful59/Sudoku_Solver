@@ -8,227 +8,201 @@
 #include "board_state.h"
 #include "human_logic.h"
 
-namespace assignment_internal
-{
-    namespace
-    {
-        struct DfsSolver
-        {
-            BoardState state;
-            AssignmentSolveStats stats{};
-            AssignmentTechniqueStats techniques{};
-            std::array<int, 81> firstSolution{};
-            int solutionCount = 0;
-            int solutionLimit = 2;
+namespace assignment_internal {
+namespace {
 
-            explicit DfsSolver(const AssignmentSudoku &input) : state(input) {}
+struct DfsSolver {
+    BoardState state;
+    AssignmentSolveStats stats{};
+    AssignmentTechniqueStats techniques{};
+    std::array<int, 81> firstSolution{};
+    int solutionCount = 0;
+    int solutionLimit = 2;
 
-            bool PickMrvCell(int &outIdx, uint16_t &outMask) const
-            {
-                // MRV: pick the empty cell with the fewest legal candidates.
-                int bestIdx = -1;
-                int bestCount = std::numeric_limits<int>::max();
-                uint16_t bestMask = 0;
+    explicit DfsSolver(const AssignmentSudoku &input) : state(input) {}
 
-                for (int idx = 0; idx < 81; ++idx)
-                {
-                    if (state.board[idx] != 0)
-                    {
-                        continue;
-                    }
+    bool PickMrvCell(int &outIdx, uint16_t &outMask) const {
+        int bestIdx = -1;
+        int bestCount = std::numeric_limits<int>::max();
+        uint16_t bestMask = 0;
 
-                    const int row = idx / 9;
-                    const int col = idx % 9;
-                    const uint16_t mask = state.candidates(row, col);
-                    const int count = Popcount(mask);
-                    if (count == 0)
-                    {
-                        return false;
-                    }
-                    if (count < bestCount)
-                    {
-                        bestCount = count;
-                        bestIdx = idx;
-                        bestMask = mask;
-                        if (count == 1)
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                outIdx = bestIdx;
-                outMask = bestMask;
-                return true;
+        for (int idx = 0; idx < 81; ++idx) {
+            if (state.board[idx] != 0) {
+                continue;
             }
 
-            bool PropagateNakedSingles(std::vector<std::pair<int, int>> &trail)
-            {
-                // Repeatedly apply forced moves; keep trail for rollback during DFS.
-                bool changed = true;
-                while (changed)
-                {
-                    changed = false;
-                    for (int idx = 0; idx < 81; ++idx)
-                    {
-                        if (state.board[idx] != 0)
-                        {
-                            continue;
-                        }
-
-                        const int row = idx / 9;
-                        const int col = idx % 9;
-                        const uint16_t mask = state.candidates(row, col);
-                        const int count = Popcount(mask);
-                        if (count == 0)
-                        {
-                            return false;
-                        }
-                        if (count == 1)
-                        {
-                            const int value = BitToDigit(mask);
-                            if (!state.place(row, col, value))
-                            {
-                                return false;
-                            }
-                            trail.emplace_back(idx, value);
-                            changed = true;
-                        }
-                    }
-                }
-                return true;
+            const int row = idx / 9;
+            const int col = idx % 9;
+            const uint16_t mask = state.candidates(row, col);
+            const int count = Popcount(mask);
+            if (count == 0) {
+                return false;
             }
-
-            void Rollback(const std::vector<std::pair<int, int>> &trail)
-            {
-                for (size_t i = trail.size(); i-- > 0;)
-                {
-                    const int idx = trail[i].first;
-                    const int value = trail[i].second;
-                    state.remove(idx / 9, idx % 9, value);
+            if (count < bestCount) {
+                bestCount = count;
+                bestIdx = idx;
+                bestMask = mask;
+                if (count == 1) {
+                    break;
                 }
             }
+        }
 
-            void Search(int depth)
-            {
-                if (solutionCount >= solutionLimit)
-                {
-                    return;
-                }
+        outIdx = bestIdx;
+        outMask = bestMask;
+        return true;
+    }
 
-                stats.maxDepth = std::max(stats.maxDepth, depth);
-
-                std::vector<std::pair<int, int>> forced;
-                if (!PropagateNakedSingles(forced))
-                {
-                    Rollback(forced);
-                    ++stats.backtracks;
-                    return;
-                }
-
-                int idx = -1;
-                uint16_t mask = 0;
-                if (!PickMrvCell(idx, mask))
-                {
-                    Rollback(forced);
-                    return;
-                }
-
-                if (idx == -1)
-                {
-                    ++solutionCount;
-                    if (solutionCount == 1)
-                    {
-                        firstSolution = state.board;
-                    }
-                    Rollback(forced);
-                    return;
-                }
-
-                std::vector<int> digits;
-                for (uint16_t bits = mask; bits != 0; bits &= static_cast<uint16_t>(bits - 1))
-                {
-                    // Extract lowest set bit to enumerate candidates from the bitmask.
-                    const uint16_t low =
-                        static_cast<uint16_t>(bits & static_cast<uint16_t>(-static_cast<int16_t>(bits)));
-                    digits.push_back(BitToDigit(low));
-                }
-
-                if (digits.size() > 1)
-                {
-                    ++stats.branches;
-                    techniques.usedBacktracking = true;
+    bool PropagateNakedSingles(std::vector<std::pair<int, int>> &trail) {
+        bool changed = true;
+        while (changed) {
+            changed = false;
+            for (int idx = 0; idx < 81; ++idx) {
+                if (state.board[idx] != 0) {
+                    continue;
                 }
 
                 const int row = idx / 9;
                 const int col = idx % 9;
-                for (int value : digits)
-                {
-                    if (!state.place(row, col, value))
-                    {
-                        continue;
-                    }
-                    Search(depth + 1);
-                    state.remove(row, col, value);
-
-                    if (solutionCount >= solutionLimit)
-                    {
-                        Rollback(forced);
-                        return;
-                    }
+                const uint16_t mask = state.candidates(row, col);
+                const int count = Popcount(mask);
+                if (count == 0) {
+                    return false;
                 }
-
-                Rollback(forced);
-                ++stats.backtracks;
+                if (count == 1) {
+                    const int value = BitToDigit(mask);
+                    if (!state.place(row, col, value)) {
+                        return false;
+                    }
+                    trail.emplace_back(idx, value);
+                    changed = true;
+                }
             }
-        };
+        }
+        return true;
+    }
 
-    } // namespace
+    void Rollback(const std::vector<std::pair<int, int>> &trail) {
+        for (size_t i = trail.size(); i-- > 0;) {
+            const int idx = trail[i].first;
+            const int value = trail[i].second;
+            state.remove(idx / 9, idx % 9, value);
+        }
+    }
 
-    AssignmentSolveResult SolveWithConfig(const AssignmentSudoku &input,
-                                          int solutionLimit,
-                                          bool useHumanTechniques)
-    {
-        AssignmentSolveResult result{};
-
-        DfsSolver solver(input);
-        result.validInput = solver.state.valid;
-        if (!solver.state.valid)
-        {
-            return result;
+    void Search(int depth) {
+        if (solutionCount >= solutionLimit) {
+            return;
         }
 
-        solver.solutionLimit = std::max(1, solutionLimit);
-        if (useHumanTechniques)
-        {
-            RunHumanTechniques(solver.state, solver.techniques);
+        stats.maxDepth = std::max(stats.maxDepth, depth);
+
+        std::vector<std::pair<int, int>> forced;
+        if (!PropagateNakedSingles(forced)) {
+            Rollback(forced);
+            ++stats.backtracks;
+            return;
         }
 
-        if (solver.state.solved())
-        {
-            solver.solutionCount = 1;
-            solver.firstSolution = solver.state.board;
-        }
-        else
-        {
-            solver.Search(0);
+        int idx = -1;
+        uint16_t mask = 0;
+        if (!PickMrvCell(idx, mask)) {
+            Rollback(forced);
+            return;
         }
 
-        result.solved = (solver.solutionCount >= 1);
-        result.solutionCount = solver.solutionCount;
-        result.stats = solver.stats;
-        result.techniques = solver.techniques;
-        if (solver.solutionCount >= 1)
-        {
-            result.solution.cells = solver.firstSolution;
+        if (idx == -1) {
+            ++solutionCount;
+            if (solutionCount == 1) {
+                firstSolution = state.board;
+            }
+            Rollback(forced);
+            return;
         }
 
+        std::vector<int> digits;
+        for (uint16_t bits = mask; bits != 0; bits &= static_cast<uint16_t>(bits - 1)) {
+            const uint16_t low =
+                static_cast<uint16_t>(bits & static_cast<uint16_t>(-static_cast<int16_t>(bits)));
+            digits.push_back(BitToDigit(low));
+        }
+
+        if (digits.size() > 1) {
+            ++stats.branches;
+            techniques.usedBacktracking = true;
+        }
+
+        const int row = idx / 9;
+        const int col = idx % 9;
+        for (int value : digits) {
+            if (!state.place(row, col, value)) {
+                continue;
+            }
+            Search(depth + 1);
+            state.remove(row, col, value);
+
+            if (solutionCount >= solutionLimit) {
+                Rollback(forced);
+                return;
+            }
+        }
+
+        Rollback(forced);
+        ++stats.backtracks;
+    }
+};
+
+} // namespace
+
+AssignmentSolveResult SolveWithConfig(const AssignmentSudoku &input,
+                                      int solutionLimit,
+                                      bool useHumanTechniques) {
+    AssignmentSolveResult result{};
+
+    DfsSolver solver(input);
+    result.validInput = solver.state.valid;
+    if (!solver.state.valid) {
         return result;
     }
 
+    solver.solutionLimit = std::max(1, solutionLimit);
+    if (useHumanTechniques) {
+        RunHumanTechniques(solver.state, solver.techniques);
+    }
+
+    if (solver.state.solved()) {
+        solver.solutionCount = 1;
+        solver.firstSolution = solver.state.board;
+    } else {
+        solver.Search(0);
+    }
+
+    result.solved = (solver.solutionCount >= 1);
+    result.solutionCount = solver.solutionCount;
+    result.stats = solver.stats;
+    result.techniques = solver.techniques;
+    if (solver.solutionCount >= 1) {
+        result.solution.cells = solver.firstSolution;
+    }
+
+    return result;
+}
+
 } // namespace assignment_internal
 
-AssignmentSolveResult SolveSudokuUnique(const AssignmentSudoku &input)
-{
-    return assignment_internal::SolveWithConfig(input, 2, false);
+AssignmentSolveResult SolveSudokuUnique(const AssignmentSudoku &input,
+                                        int solutionLimit,
+                                        bool useHumanTechniques) {
+    return assignment_internal::SolveWithConfig(input, solutionLimit, useHumanTechniques);
+}
+
+bool GenerateSolvedBoard(AssignmentSudoku &outBoard, bool useHumanTechniques) {
+    AssignmentSudoku empty{};
+    const AssignmentSolveResult result =
+        assignment_internal::SolveWithConfig(empty, 1, useHumanTechniques);
+    if (!result.validInput || result.solutionCount != 1) {
+        return false;
+    }
+    outBoard = result.solution;
+    return true;
 }
