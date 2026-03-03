@@ -1,6 +1,6 @@
 #include <chrono>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <string>
 
 #include "assignment_sudoku.h"
@@ -9,14 +9,14 @@ static void PrintUsage()
 {
     std::cout << "Qlik Sudoku Assignment\n\n";
     std::cout << "Usage:\n";
-    std::cout << "  sudoku <file>              # load and print puzzle\n";
     std::cout << "  sudoku print <file>        # load and print puzzle\n";
     std::cout << "  sudoku solve <file>        # solve and print puzzle\n";
+    std::cout << "  sudoku grade <file>        # classify puzzle difficulty\n";
 }
 
 int main(int argc, char **argv)
 {
-    if (argc < 2)
+    if (argc < 3)
     {
         PrintUsage();
         return 1;
@@ -70,15 +70,35 @@ int main(int argc, char **argv)
         std::cout << "Puzzle solved successfully:\n";
         std::cout << SudokuToPrettyString(board) << '\n';
     }
-    else if (command != "print" && command != "load")
+
+    else if (command == "grade")
+    {
+        AssignmentSolveResult metrics{};
+        const std::optional<AssignmentDifficulty> difficulty = GradeSudoku(board, metrics);
+        if (!difficulty.has_value())
+        {
+            std::cerr << "Error: Unable to grade puzzle (invalid, unsolved, or non-unique)\n";
+            return 1;
+        }
+
+        std::cout << "Difficulty: " << DifficultyToString(*difficulty) << '\n';
+        std::cout << "Grade metrics:\n";
+        std::cout << "  branches:   " << metrics.stats.branches << '\n';
+        std::cout << "  backtracks: " << metrics.stats.backtracks << '\n';
+        std::cout << "  max depth:  " << metrics.stats.maxDepth << '\n';
+        std::cout << "  solutions:  " << metrics.solutionCount << '\n';
+        std::cout << "  naked singles:  " << metrics.techniques.nakedSingles << '\n';
+        std::cout << "  hidden singles: " << metrics.techniques.hiddenSingles << '\n';
+        std::cout << "  naked pairs:    " << metrics.techniques.nakedPairs << '\n';
+        std::cout << "  hidden pairs:   " << metrics.techniques.hiddenPairs << '\n';
+
+         std::cout << SudokuToPrettyString(metrics.solution) << '\n';
+    }
+    else if (command != "print" && command != "solve" && command != "grade")
     {
         std::cerr << "Error: Unknown command '" << command << "'.\n\n";
         PrintUsage();
         return 1;
-    }
-    else
-    {
-        std::cout << SudokuToPrettyString(board) << '\n';
     }
     return 0;
 }

@@ -7,7 +7,8 @@ namespace assignment_internal
 {
 
     AssignmentSolveResult SolveWithConfig(const AssignmentSudoku &input,
-                                          int solutionLimit = 2);
+                                          int solutionLimit = 2,
+                                          bool useHumanTechniques = false);
 
 } // namespace assignment_internal
 

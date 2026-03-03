@@ -10,7 +10,9 @@ add_executable(sudoku
   src/main.cpp
   src/puzzle_io.cpp
   src/board_state.cpp
+  src/human_logic.cpp
   src/solver_core.cpp
+  src/grader.cpp
 )
 
 target_include_directories(sudoku

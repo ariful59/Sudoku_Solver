@@ -6,12 +6,12 @@
 #include <vector>
 
 #include "board_state.h"
+#include "human_logic.h"
 
 namespace assignment_internal
 {
     namespace
     {
-
         struct DfsSolver
         {
             BoardState state;
@@ -25,6 +25,7 @@ namespace assignment_internal
 
             bool PickMrvCell(int &outIdx, uint16_t &outMask) const
             {
+                // MRV: pick the empty cell with the fewest legal candidates.
                 int bestIdx = -1;
                 int bestCount = std::numeric_limits<int>::max();
                 uint16_t bestMask = 0;
@@ -63,6 +64,7 @@ namespace assignment_internal
 
             bool PropagateNakedSingles(std::vector<std::pair<int, int>> &trail)
             {
+                // Repeatedly apply forced moves; keep trail for rollback during DFS.
                 bool changed = true;
                 while (changed)
                 {
@@ -146,6 +148,7 @@ namespace assignment_internal
                 std::vector<int> digits;
                 for (uint16_t bits = mask; bits != 0; bits &= static_cast<uint16_t>(bits - 1))
                 {
+                    // Extract lowest set bit to enumerate candidates from the bitmask.
                     const uint16_t low =
                         static_cast<uint16_t>(bits & static_cast<uint16_t>(-static_cast<int16_t>(bits)));
                     digits.push_back(BitToDigit(low));
@@ -183,7 +186,8 @@ namespace assignment_internal
     } // namespace
 
     AssignmentSolveResult SolveWithConfig(const AssignmentSudoku &input,
-                                          int solutionLimit)
+                                          int solutionLimit,
+                                          bool useHumanTechniques)
     {
         AssignmentSolveResult result{};
 
@@ -195,7 +199,20 @@ namespace assignment_internal
         }
 
         solver.solutionLimit = std::max(1, solutionLimit);
-        solver.Search(0);
+        if (useHumanTechniques)
+        {
+            RunHumanTechniques(solver.state, solver.techniques);
+        }
+
+        if (solver.state.solved())
+        {
+            solver.solutionCount = 1;
+            solver.firstSolution = solver.state.board;
+        }
+        else
+        {
+            solver.Search(0);
+        }
 
         result.solved = (solver.solutionCount >= 1);
         result.solutionCount = solver.solutionCount;
@@ -213,5 +230,5 @@ namespace assignment_internal
 
 AssignmentSolveResult SolveSudokuUnique(const AssignmentSudoku &input)
 {
-    return assignment_internal::SolveWithConfig(input, 2);
+    return assignment_internal::SolveWithConfig(input, 2, false);
 }

@@ -22,11 +22,7 @@ cmake --build build -j
 ## Run
 ### Part 1: Load + print puzzle
 ```bash
-./build/sudoku ./assignment_examples/easy.txt
-```
 
-You can also use:
-```bash
 ./build/sudoku print ./assignment_examples/easy.txt
 ```
 
@@ -35,6 +31,14 @@ You can also use:
 ./build/sudoku solve ./assignment_examples/easy.txt
 ./build/sudoku solve ./assignment_examples/hard.txt
 ```
+
+### Difficulty grading
+```bash
+./build/sudoku grade ./assignment_examples/easy.txt
+./build/sudoku grade ./assignment_examples/samurai.txt
+```
+
+`grade` validates uniqueness and classifies difficulty as `easy`, `medium`, `hard`, or `samurai`.
 
 Behavior in `solve` mode:
 1. Prints solved board only if exactly one solution exists.

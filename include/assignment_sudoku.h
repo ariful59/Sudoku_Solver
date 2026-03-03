@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cstdint>
+#include <optional>
 #include <string>
 
 struct AssignmentSudoku
@@ -13,6 +14,14 @@ struct AssignmentSudoku
     int at(int row, int col) const { return cells[row * 9 + col]; }
 };
 
+enum class AssignmentDifficulty {
+    EASY = 0,
+    MEDIUM = 1,
+    HARD = 2,
+    SAMURAI = 3
+};
+
+
 struct AssignmentSolveStats
 {
     int branches = 0;
@@ -20,8 +29,11 @@ struct AssignmentSolveStats
     int maxDepth = 0;
 };
 
-struct AssignmentTechniqueStats
-{
+struct AssignmentTechniqueStats {
+    int nakedSingles = 0;
+    int hiddenSingles = 0;
+    int nakedPairs = 0;
+    int hiddenPairs = 0;
     bool usedBacktracking = false;
 };
 
@@ -42,5 +54,8 @@ bool SaveSudokuToTextFile(const std::string &path,
 std::string SudokuToPrettyString(const AssignmentSudoku &board);
 bool IsBoardConsistent(const AssignmentSudoku &board);
 AssignmentSolveResult SolveSudokuUnique(const AssignmentSudoku &input);
+std::optional<AssignmentDifficulty> GradeSudoku(const AssignmentSudoku &input,
+                                                AssignmentSolveResult &outMetrics);
+const char *DifficultyToString(AssignmentDifficulty difficulty);
 
 #endif
