@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(QlikSudokuAssignment LANGUAGES CXX)
+project(SudokuSolver LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,11 +9,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(sudoku
   src/main.cpp
   src/utility.cpp
-  src/puzzle_io.cpp
-  src/sudoku_rules.cpp
+  src/sudoku_io.cpp
   src/board_state.cpp
   src/human_logic.cpp
-  src/solver_core.cpp
+  src/solver_engine.cpp
+  src/solver.cpp
   src/generator.cpp
   src/grader.cpp
 )

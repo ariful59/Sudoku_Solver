@@ -2,4 +2,4 @@
 build/
 .cache/
 .editorconfig
-generated_puzzle/
+generated_sudokus/

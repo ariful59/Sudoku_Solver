@@ -52,11 +52,6 @@ bool LoadSudokuFromTextFile(const std::string &path, Board &board,
     }
   }
 
-  if (!IsBoardConsistent(board)) {
-    error = "Input board violates Sudoku rules.";
-    return false;
-  }
-
   return true;
 }
 

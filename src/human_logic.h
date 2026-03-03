@@ -5,7 +5,7 @@
 
 namespace sudoku::internal {
 
-void RunHumanTechniques(BoardState &state, TechniqueStats &techniques);
+	void RunHumanTechniques(BoardState& state, TechniqueStats& techniques);
 
 } // namespace sudoku::internal
 

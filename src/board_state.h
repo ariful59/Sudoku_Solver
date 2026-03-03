@@ -8,27 +8,27 @@
 
 namespace sudoku::internal {
 
-constexpr uint16_t kAllDigitsMask = 0x1FF;
+  constexpr uint16_t kAllDigitsMask = 0x1FF;
 
-int BoxIndex(int row, int col);
-uint16_t DigitBit(int digit);
-int Popcount(uint16_t x);
-int BitToDigit(uint16_t bit);
+  int BoxIndex(int row, int col);
+  uint16_t DigitBit(int digit);
+  int Popcount(uint16_t x);
+  int BitToDigit(uint16_t bit);
 
-struct BoardState {
-  std::array<int, 81> board{};
-  std::array<uint16_t, 9> rowMask{};
-  std::array<uint16_t, 9> colMask{};
-  std::array<uint16_t, 9> boxMask{};
-  bool valid = true;
+  struct BoardState {
+    std::array<int, 81> board{};
+    std::array<uint16_t, 9> rowMask{};
+    std::array<uint16_t, 9> colMask{};
+    std::array<uint16_t, 9> boxMask{};
+    bool valid = true;
 
-  explicit BoardState(const Board &input);
+    explicit BoardState(const Board& input);
 
-  bool solved() const;
-  uint16_t candidates(int row, int col) const;
-  bool place(int row, int col, int value);
-  void remove(int row, int col, int value);
-};
+    bool solved() const;
+    uint16_t candidates(int row, int col) const;
+    bool place(int row, int col, int value);
+    void remove(int row, int col, int value);
+  };
 
 } // namespace sudoku::internal
 

@@ -9,16 +9,18 @@
 
 namespace sudoku {
 
-std::optional<Difficulty> ParseDifficulty(const std::string &text);
-std::string DifficultyToString(Difficulty difficulty);
-std::string BuildGeneratedPuzzlePath(Difficulty difficulty);
-void PrintUsage(std::ostream &out);
-void PrintSolveReport(const SolveResult &result, double elapsedMs,
-                      std::ostream &out);
-void PrintGradeReport(Difficulty difficulty, const SolveResult &metrics,
-                      std::ostream &out);
-void PrintGenerateReport(const std::string &outputPath, Difficulty target,
-                         Difficulty detected, std::ostream &out);
+  std::optional<Difficulty> ParseDifficulty(const std::string& text);
+  std::string DifficultyToString(Difficulty difficulty);
+  std::string BuildGeneratedPuzzlePath(Difficulty difficulty);
+  void PrintUsage(std::ostream& out);
+  void PrintElapsedMs(double elapsedMs, std::ostream& out);
+  void PrintSolveReport(const SolveResult& result, double elapsedMs,
+    std::ostream& out);
+  void PrintGradeReport(Difficulty difficulty, const SolveResult& metrics,
+    double elapsedMs, std::ostream& out);
+  void PrintGenerateReport(const std::string& outputPath, Difficulty target,
+    Difficulty detected, double elapsedMs,
+    std::ostream& out);
 
 } // namespace sudoku
 

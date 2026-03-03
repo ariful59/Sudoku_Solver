@@ -8,41 +8,50 @@ using namespace sudoku;
 
 namespace {
 
-int CheckResult(const SolveResult &res) {
-  if (!res.validInput)
-    return (std::cerr << "Error: Invalid input\n", 1);
-  if (!res.solved || res.solutionCount == 0)
-    return (std::cerr << "Error: No solution\n", 1);
-  if (res.solutionCount > 1)
-    return (std::cerr << "Error: Not unique\n", 1);
-  return 0;
-}
+  int CheckResult(const SolveResult& res) {
+    if (!res.validInput)
+      return (std::cerr << "Error: Invalid input\n", 1);
+    if (!res.solved || res.solutionCount == 0)
+      return (std::cerr << "Error: No solution\n", 1);
+    if (res.solutionCount > 1)
+      return (std::cerr << "Error: Not unique\n", 1);
+    return 0;
+  }
 
-int HandleGenerate(int argc, char **argv) {
-  if (argc < 3)
-    return (PrintUsage(std::cout), 1);
-  auto target = ParseDifficulty(argv[2]);
-  if (!target)
-    return (std::cerr << "Error: Unknown difficulty " << argv[2] << "\n", 1);
+  int HandleGenerate(int argc, char** argv) {
+    auto start = std::chrono::steady_clock::now();
+    auto target = ParseDifficulty(argv[2]);
+    if (!target) {
+      std::cerr << "Error: Unknown difficulty " << argv[2] << "\n";
+      return (PrintUsage(std::cout), 1);
+    }
+    bool sym = false;
+    if (argc >= 4) {
+      if (std::string(argv[3]) != "--symmetry")
+        return (PrintUsage(std::cout), 1);
+      sym = true;
+    }
+    auto gen = GenerateSudoku(*target, sym);
+    if (!gen)
+      return (std::cerr << "Error: Could not able to generated sudoku with requested difficulty\n", 1);
 
-  bool sym = (argc >= 4 && std::string(argv[3]) == "--symmetry");
-  auto gen = GenerateSudoku(*target, sym);
-  if (!gen)
-    return (std::cerr << "Error: Generation failed\n", 1);
+    std::filesystem::create_directories("generated_sudokus");
+    std::string path = BuildGeneratedPuzzlePath(*target), err;
+    if (!SaveSudokuToTextFile(path, gen->sudoku, err))
+      return (std::cerr << "Error: " << err << "\n", 1);
 
-  std::filesystem::create_directories("generated_puzzle");
-  std::string path = BuildGeneratedPuzzlePath(*target), err;
-  if (!SaveSudokuToTextFile(path, gen->puzzle, err))
-    return (std::cerr << "Error: " << err << "\n", 1);
-
-  PrintGenerateReport(path, *target, gen->detectedDifficulty, std::cout);
-  return 0;
-}
+    auto ms = std::chrono::duration<double, std::milli>(
+      std::chrono::steady_clock::now() - start)
+      .count();
+    PrintGenerateReport(path, *target, gen->detectedDifficulty, ms, std::cout);
+    std::cout << SudokuToPrettyString(gen->sudoku) << '\n';
+    return 0;
+  }
 
 } // namespace
 
-int main(int argc, char **argv) {
-  if (argc < 2)
+int main(int argc, char** argv) {
+  if (argc < 3)
     return (PrintUsage(std::cout), 1);
   std::string cmd = argv[1];
   if (cmd == "generate")
@@ -50,35 +59,38 @@ int main(int argc, char **argv) {
 
   Board board{};
   std::string err;
-  if (argc < 3)
-    return (PrintUsage(std::cout), 1);
   if (!LoadSudokuFromTextFile(argv[2], board, err))
     return (std::cerr << "Error: " << err << "\n", 1);
 
-  if (cmd == "print")
-    return (std::cout << SudokuToPrettyString(board) << "\n", 0);
-
-  if (cmd == "solve") {
+  if (cmd == "print") {
+    std::cout << SudokuToPrettyString(board) << '\n';
+  }
+  else if (cmd == "solve") {
     auto start = std::chrono::steady_clock::now();
-    auto res = SolveSudokuUnique(board);
+    const bool requireUnique = true;
+    const bool useHumanTechniques = false;
+    auto res = SolveSudoku(board, requireUnique, useHumanTechniques);
     auto ms = std::chrono::duration<double, std::milli>(
-                  std::chrono::steady_clock::now() - start)
-                  .count();
+      std::chrono::steady_clock::now() - start)
+      .count();
     if (int v = CheckResult(res))
       return v;
-    return (PrintSolveReport(res, ms, std::cout), 0);
+    PrintSolveReport(res, ms, std::cout);
   }
-
-  if (cmd == "grade") {
-    auto metrics = SolveSudokuUnique(board, 2, true);
-    if (int v = CheckResult(metrics))
-      return v;
-    auto diff = GradeSudoku(metrics);
+  else if (cmd == "grade") {
+    auto start = std::chrono::steady_clock::now();
+    SolveResult metrics{};
+    auto diff = GradeSudoku(board, metrics);
     if (!diff)
       return (std::cerr << "Error: Grading failed\n", 1);
-    return (PrintGradeReport(*diff, metrics, std::cout), 0);
+    auto ms = std::chrono::duration<double, std::milli>(
+      std::chrono::steady_clock::now() - start)
+      .count();
+    PrintGradeReport(*diff, metrics, ms, std::cout);
   }
-
-  return (std::cerr << "Error: Unknown command " << cmd << "\n",
-          PrintUsage(std::cout), 1);
+  else {
+    PrintUsage(std::cout);
+    return 1;
+  }
+  return 0;
 }

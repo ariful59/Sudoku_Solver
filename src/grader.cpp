@@ -1,35 +1,46 @@
 #include "sudoku.h"
 
-#include "solver_core.h"
+namespace sudoku
+{
 
-namespace sudoku {
+  std::optional<Difficulty> GradeSudoku(const Board& board,
+    SolveResult& metrics)
+  {
+    const bool requireUnique = false;
+    const bool useHumanTechniques = true;
+    metrics = SolveSudoku(board, requireUnique, useHumanTechniques);
+    return GradePuzzleDifficulty(metrics);
+  }
 
-namespace {
-Difficulty ClassifyBySearchEffort(const SolveStats &stats) {
-  if (stats.backtracks <= 10 && stats.branches <= 5 && stats.maxDepth <= 3)
-    return Difficulty::HARD;
-  return Difficulty::SAMURAI;
-}
-} // namespace
+  std::optional<Difficulty> GradePuzzleDifficulty(const SolveResult& metrics)
+  {
+    const auto& t = metrics.techniques;
+    const auto& s = metrics.stats;
 
-std::optional<Difficulty> GradeSudoku(const SolveResult &metrics) {
-  if (!metrics.validInput || !metrics.solved || metrics.solutionCount != 1)
-    return std::nullopt;
+    const bool backtracking = t.usedBacktracking;
+    const bool usedHiddenSingles = t.hiddenSingles > 0;
+    const bool usedNakedSingles = t.nakedSingles > 0;
+    const bool usedPairTechniques = (t.nakedPairs > 0 || t.hiddenPairs > 0);
+    const bool limitedSearch =
+      (s.backtracks <= 10 && s.branches <= 5 && s.maxDepth <= 3);
 
-  if (!metrics.techniques.usedBacktracking &&
-      metrics.techniques.hiddenSingles == 0 &&
-      metrics.techniques.nakedPairs == 0 && metrics.techniques.hiddenPairs == 0)
-    return Difficulty::EASY;
+    if (!metrics.validInput || !metrics.solved || metrics.solutionCount != 1)
+      return std::nullopt;
 
-  if (!metrics.techniques.usedBacktracking &&
-      metrics.techniques.hiddenSingles > 0 &&
-      metrics.techniques.nakedPairs == 0 && metrics.techniques.hiddenPairs == 0)
-    return Difficulty::MEDIUM;
+    // Easy: solved with singles only, no backtracking.
+    if (!backtracking && !usedPairTechniques && !usedHiddenSingles && usedNakedSingles)
+      return Difficulty::EASY;
 
-  if (metrics.techniques.nakedPairs > 0 || metrics.techniques.hiddenPairs > 0)
-    return Difficulty::HARD;
+    // Medium: hidden singles used, no pair techniques/backtracking.
+    if (!backtracking && !usedPairTechniques && usedHiddenSingles)
+      return Difficulty::MEDIUM;
 
-  return ClassifyBySearchEffort(metrics.stats);
-}
+    // Hard: pair techniques used, or limited search effort.
+    if (usedPairTechniques || limitedSearch)
+      return Difficulty::HARD;
+
+    // Samurai: heavier search required.
+    return Difficulty::SAMURAI;
+  }
 
 } // namespace sudoku
