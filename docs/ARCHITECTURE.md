@@ -16,6 +16,7 @@ CLI handles commands, I/O handles files and rendering, public APIs expose stable
 | Domain modules (`solver.cpp`, `grader.cpp`, `generator.cpp`) | wrapper for solver, difficulty mapping, puzzle generation strategy. |
 | Utility (`utility.cpp`) | Usage text, parsing helpers, report formatting, output paths. |
 
+
 ## High-Level Flow
 ```mermaid
 flowchart LR
@@ -90,7 +91,7 @@ Sudoku_Solver/
 4. CLI prints metrics and the solved board.
 
 #### Solver Engine Design
-![Solver Engine Flow](solver_engine.png)
+![Solver Engine Flow](generation_logic.jpg)
 
 This diagram shows the solver flow from input validation to search and final result construction.
 
@@ -114,7 +115,7 @@ Optimization techniques used in DFS:
 5. CLI saves and prints the generated puzzle.
 
 #### Generation Design
-![Generation Flow](generation_logic.png)
+![Generation Flow](solver_engine.jpg)
 
 Generation strategy:
 1. Start from a solved board.
@@ -136,5 +137,8 @@ Grading is heuristic and based on implemented logic plus search effort:
 3. Symmetry mode supports only 180-degree rotational symmetry.
 4. Generation is randomized, so outputs can vary between runs.
 5. Difficulty grading does not consider uniqueness verification.
+6. Technique completeness/correctness: hidden pairs is not fully effective without true candidate-pruning support.
+7. Generator reliability: difficulty targeting is best-effort; medium may require more attempts
+8. Automated testing depth: missing strong unit/integration/regression test suite.
 
 Want to learn more: [SudokuWiki](https://www.sudokuwiki.org/Introduction).

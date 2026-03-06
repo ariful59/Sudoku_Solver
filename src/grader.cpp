@@ -19,7 +19,7 @@ namespace sudoku
 
     const bool backtracking = t.usedBacktracking;
     const bool usedHiddenSingles = t.hiddenSingles > 0;
-    const bool usedNakedSingles = t.nakedSingles > 0;
+    const bool usedNakedSingles = t.nakedSingles >= 0;
     const bool usedPairTechniques = (t.nakedPairs > 0 || t.hiddenPairs > 0);
     const bool limitedSearch =
       (s.backtracks <= 10 && s.branches <= 5 && s.maxDepth <= 3);

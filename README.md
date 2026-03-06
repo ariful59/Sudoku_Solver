@@ -24,8 +24,11 @@ From the project root directory:
 ```bash
 cmake -S . -B build
 cmake --build build -j
-```
 
+# Run tests (optional)
+cd build && ctest --output-on-failure
+cd ..
+```
 Executable path:
 - `./build/sudoku`
 

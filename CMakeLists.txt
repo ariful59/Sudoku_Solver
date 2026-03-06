@@ -28,3 +28,31 @@ if (MSVC)
 else()
     target_compile_options(sudoku PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+
+enable_testing()
+
+add_executable(test_solver_suite
+  unit_test/test_solver_suite.cpp
+  src/sudoku_io.cpp
+  src/board_state.cpp
+  src/human_logic.cpp
+  src/solver_engine.cpp
+  src/solver.cpp
+)
+
+target_include_directories(test_solver_suite
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_compile_definitions(test_solver_suite
+    PRIVATE
+        TEST_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+if (MSVC)
+    target_compile_options(test_solver_suite PRIVATE /W4 /permissive-)
+else()
+    target_compile_options(test_solver_suite PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+add_test(NAME solver_suite COMMAND test_solver_suite)

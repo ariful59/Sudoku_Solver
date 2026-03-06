@@ -72,7 +72,7 @@ namespace sudoku
     GenerationResult selected{};
     int closestDistance = std::numeric_limits<int>::max();
 
-    for (int attempt = 0; attempt < attempts; ++attempt)
+    for (int attempt = 0; attempt < attempts && closestDistance > 0; ++attempt)
     {
       Board solution{};
       if (!GenerateSolvedBoard(solution))
