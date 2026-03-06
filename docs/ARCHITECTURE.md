@@ -11,9 +11,9 @@ CLI handles commands, I/O handles files and rendering, public APIs expose stable
 |---|---|
 | CLI (`main.cpp`) | Parse commands and print results. |
 | I/O (`sudoku_io.cpp`) | Load/save puzzles and format printable boards. |
-| Public API (`sudoku.h`, `solver.cpp`) | Expose `solve`, `grade`, `generate` entry points. |
-| Engine (`solver_engine.cpp`, `board_state.cpp`) | Run DFS, propagation, MRV, and uniqueness checks. |
-| Domain modules (`human_logic.cpp`, `grader.cpp`, `generator.cpp`) | Human techniques, difficulty mapping, puzzle generation strategy. |
+| Public API (`sudoku.h`) | Expose `solve`, `grade`, `generate` entry points. |
+| Engine (`solver_engine.cpp`, `board_state.cpp`, `human_logic.cpp`) | Run DFS, propagation, MRV, and uniqueness checks, Human techniques |
+| Domain modules (`solver.cpp`, `grader.cpp`, `generator.cpp`) | wrapper for solver, difficulty mapping, puzzle generation strategy. |
 | Utility (`utility.cpp`) | Usage text, parsing helpers, report formatting, output paths. |
 
 ## High-Level Flow
@@ -69,7 +69,7 @@ Sudoku_Solver/
     └── ARCHITECTURE.md
 ```
 
-## Core Types
+## Core Data Models
 | Type | Responsibility |
 |---|---|
 | `Board` | Canonical 9x9 Sudoku grid (`81` cells). |
@@ -84,13 +84,24 @@ Sudoku_Solver/
 2. CLI prints `SudokuToPrettyString(board)`.
 
 ### `solve`
-1. CLI loads the board.
+1. CLI loads the board from a file provided by the user.
 2. Calls `SolveSudoku(..., requireUnique=true, useHumanTechniques=false)`.
 3. Engine searches up to two solutions to verify uniqueness.
 4. CLI prints metrics and the solved board.
 
+#### Solver Engine Design
+![Solver Engine Flow](solver_engine.png)
+
+This diagram shows the solver flow from input validation to search and final result construction.
+
+Optimization techniques used in DFS:
+1. Bitmask-based constraints for rows, columns, and boxes.
+2. Naked-single propagation.
+3. MRV (Minimum Remaining Values) branch selection.
+4. Backtracking with solution counting for uniqueness checks.
+
 ### `grade`
-1. CLI loads the board.
+1. CLI loads the board from a file provided by the user.
 2. Calls `GradeSudoku(board, metrics)`.
 3. Grader solves in grading mode and maps metrics to a difficulty.
 4. CLI prints difficulty and metrics.
@@ -102,18 +113,7 @@ Sudoku_Solver/
 4. Generator evaluates difficulty and keeps the closest match.
 5. CLI saves and prints the generated puzzle.
 
-## Solver Engine Design
-![Solver Engine Flow](solver_engine.png)
-
-This diagram shows the solver flow from input validation to search and final result construction.
-
-Optimization techniques used in DFS:
-1. Bitmask-based constraints for rows, columns, and boxes.
-2. Naked-single propagation.
-3. MRV (Minimum Remaining Values) branch selection.
-4. Backtracking with solution counting for uniqueness checks.
-
-## Generation Design
+#### Generation Design
 ![Generation Flow](generation_logic.png)
 
 Generation strategy:
@@ -135,5 +135,6 @@ Grading is heuristic and based on implemented logic plus search effort:
 2. Difficulty labels are implementation-based, not universal standards.
 3. Symmetry mode supports only 180-degree rotational symmetry.
 4. Generation is randomized, so outputs can vary between runs.
-5. Difficulty grading does not require uniqueness verification.
-6. For symmetry variants, see [SudokuWiki](https://www.sudokuwiki.org/Introduction).
+5. Difficulty grading does not consider uniqueness verification.
+
+Want to learn more: [SudokuWiki](https://www.sudokuwiki.org/Introduction).
