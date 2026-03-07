@@ -24,6 +24,9 @@ From the project root directory:
 ```bash
 cmake -S . -B build
 cmake --build build -j
+
+#Testing
+cd build && ctest --output-on-failure
 ```
 
 Executable path:

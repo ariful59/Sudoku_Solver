@@ -136,5 +136,8 @@ Grading is heuristic and based on implemented logic plus search effort:
 3. Symmetry mode supports only 180-degree rotational symmetry.
 4. Generation is randomized, so outputs can vary between runs.
 5. Difficulty grading does not consider uniqueness verification.
+6. Technique completeness/correctness: hidden pairs is not fully effective without true candidate-pruning support.
+7. Generator reliability: difficulty targeting is best-effort; medium may require more attempts
+8. Automated testing depth: missing strong unit/integration/regression test suite.
 
 Want to learn more: [SudokuWiki](https://www.sudokuwiki.org/Introduction).
