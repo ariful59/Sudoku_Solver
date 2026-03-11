@@ -157,13 +157,7 @@ namespace sudoku::internal {
       return result;
 
     if (useHumanTechniques) {
-      if (requireUnique) {
-        BoardState copy = solver.state;
-        RunHumanTechniques(copy, solver.techniques);
-      }
-      else {
-        RunHumanTechniques(solver.state, solver.techniques);
-      }
+      RunHumanTechniques(solver.state, solver.techniques);
     }
 
     if (!requireUnique && solver.state.solved()) {

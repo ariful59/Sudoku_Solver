@@ -30,7 +30,7 @@ flowchart LR
   HUMAN["human_logic.cpp"]
   UTIL["utility.cpp"]
 
-  CLI -->|"print/file"| IO
+  CLI -->|"file I/O"| IO
   CLI -->|"solve"| API
   CLI -->|"grade"| GRADER
   CLI -->|"generate"| GENERATOR
@@ -38,9 +38,11 @@ flowchart LR
 
   GRADER --> API
   GENERATOR --> API
+  GENERATOR --> GRADER
   API --> ENGINE
   ENGINE --> STATE
   ENGINE --> HUMAN
+
 ```
 
 ## Project Tree (Key Parts)
@@ -91,7 +93,7 @@ Sudoku_Solver/
 4. CLI prints metrics and the solved board.
 
 #### Solver Engine Design
-![Solver Engine Flow](generation_logic.jpg)
+![Solver Engine Flow](solver_engine_logic.jpg)
 
 This diagram shows the solver flow from input validation to search and final result construction.
 
@@ -115,8 +117,7 @@ Optimization techniques used in DFS:
 5. CLI saves and prints the generated puzzle.
 
 #### Generation Design
-![Generation Flow](solver_engine.jpg)
-
+![Generation Flow](generation_logic.jpg)
 Generation strategy:
 1. Start from a solved board.
 2. Randomize using Sudoku-preserving permutations.

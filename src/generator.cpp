@@ -16,6 +16,18 @@ namespace sudoku
       return std::abs(static_cast<int>(lhs) - static_cast<int>(rhs));
     }
 
+    std::pair<int, int> EmptyCellRange(Difficulty d)
+    {
+      switch (d)
+      {
+      case Difficulty::EASY: return {32, 44};
+      case Difficulty::MEDIUM: return {44, 50};
+      case Difficulty::HARD: return {50, 56};
+      case Difficulty::SAMURAI: return {56, 64};
+      default: return {44, 50};
+      }
+    }
+
     void BuildDigitPermutation(std::array<int, 10>& map, std::mt19937& rng)
     {
       map.fill(0);
@@ -65,14 +77,13 @@ namespace sudoku
     bool symmetry180, int attempts)
   {
     std::mt19937 rng(std::random_device{}());
-    bool foundCandidate = false;
-    bool useHumanTechniques = false;
     const bool requireUnique = true;
-    constexpr int maxEmptyCellsForGrading = 40;
-    GenerationResult selected{};
-    int closestDistance = std::numeric_limits<int>::max();
+    const auto [minEmpty, maxEmpty] = EmptyCellRange(targetDifficulty);
+    GenerationResult best{};
+    bool found = false;
+    int bestDist = std::numeric_limits<int>::max();
 
-    for (int attempt = 0; attempt < attempts && closestDistance > 0; ++attempt)
+    for (int attempt = 0; attempt < attempts; ++attempt)
     {
       Board solution{};
       if (!GenerateSolvedBoard(solution))
@@ -102,10 +113,8 @@ namespace sudoku
           emptyCells++;
           sudoku.cells[mirror] = 0;
         }
-        useHumanTechniques = (emptyCells > maxEmptyCellsForGrading);
-        //uniqueness only after 40 use human techniques for grading purposes
         const SolveResult metrics =
-          SolveSudoku(sudoku, requireUnique, useHumanTechniques);
+          SolveSudoku(sudoku, requireUnique, /*useHumanTechniques=*/false);
         if (!metrics.validInput || metrics.solutionCount != 1)
         {
           sudoku.cells[idx] = savedValue;
@@ -118,30 +127,29 @@ namespace sudoku
           continue;
         }
 
-        //grading starts when the sudoku as at 40 empty cells
-        if (emptyCells <= maxEmptyCellsForGrading)
+        if (emptyCells < minEmpty)
           continue;
 
-
-        const std::optional<Difficulty> detected = GradePuzzleDifficulty(metrics);
-        if (!detected)
-          continue;
-        const int dist = DifficultyDistance(*detected, targetDifficulty);
-        if (dist < closestDistance || dist == 0) {
-          foundCandidate = true;
-          closestDistance = dist;
-          selected.sudoku = sudoku;
-          selected.detectedDifficulty = *detected;
+        SolveResult gradeMetrics{};
+        const std::optional<Difficulty> detected = GradeSudoku(sudoku, gradeMetrics);
+        if (detected) {
+          const int dist = DifficultyDistance(*detected, targetDifficulty);
+          if (!found || dist < bestDist) {
+            found = true;
+            bestDist = dist;
+            best.sudoku = sudoku;
+            best.detectedDifficulty = *detected;
+          }
+          if (dist == 0) {
+            return std::make_optional(best);
+          }
         }
-        if (closestDistance == 0) {
+        if (emptyCells >= maxEmpty)
           break;
-        }
       }
+      
     }
-    if (foundCandidate && closestDistance == 0) {
-      return std::make_optional(selected);
-    }
-    return foundCandidate ? std::make_optional(selected) : std::nullopt;
+    return found ? std::make_optional(best) : std::nullopt;
   }
 
 } // namespace sudoku
