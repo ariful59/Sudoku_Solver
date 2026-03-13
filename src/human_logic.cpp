@@ -133,20 +133,20 @@ namespace sudoku::internal {
             const uint16_t m2 = state.candidates(idx2 / 9, idx2 % 9);
             if (m1 != m2)
               continue;
+            bool unitProgress = false;
             for (int idx : unit) {
               if (idx == idx1 || idx == idx2 || state.board[idx] != 0)
                 continue;
               const uint16_t mask = state.candidates(idx / 9, idx % 9);
-              if (!(mask & m1))
+              const uint16_t remove = static_cast<uint16_t>(mask & m1);
+              if (!remove)
                 continue;
-              const uint16_t remaining = static_cast<uint16_t>(mask & ~m1);
-              // Naked-pair elimination would normally prune candidates.
-              // With current BoardState API, we only place when pruning yields a single.
-              if (Popcount(remaining) == 1 &&
-                state.place(idx / 9, idx % 9, BitToDigit(remaining))) {
-                ++techniques.nakedPairs;
-                return true;
-              }
+              if (state.pruneCandidates(idx / 9, idx % 9, remove))
+                unitProgress = true;
+            }
+            if (unitProgress) {
+              ++techniques.nakedPairs;
+              return true;
             }
           }
         }
@@ -155,7 +155,7 @@ namespace sudoku::internal {
       return ApplyToUnits(state, ScanUnit);
     }
 
-    bool ApplyHiddenPairs(BoardState& state, TechniqueStats&) {
+    bool ApplyHiddenPairs(BoardState& state, TechniqueStats& techniques) {
       auto ScanUnit = [&](const std::vector<int>& unit) -> bool {
         std::array<uint16_t, 9> appears{};
         for (int d = 1; d <= 9; ++d) {
@@ -172,9 +172,25 @@ namespace sudoku::internal {
           for (int d2 = d1 + 1; d2 <= 9; ++d2) {
             if (appears[d1 - 1] != appears[d2 - 1])
               continue;
-            //todo
-            // Hidden pairs need candidate-mask pruning; with current BoardState API this is a no-op for now.
-            break;
+            const uint16_t posMask = appears[d1 - 1];
+            const uint16_t keepMask = static_cast<uint16_t>(
+              DigitBit(d1) | DigitBit(d2));
+            bool unitProgress = false;
+            for (size_t i = 0; i < unit.size(); ++i) {
+              if (!(posMask & (1u << i)))
+                continue;
+              const int idx = unit[i];
+              const uint16_t mask = state.candidates(idx / 9, idx % 9);
+              const uint16_t remove = static_cast<uint16_t>(mask & ~keepMask);
+              if (!remove)
+                continue;
+              if (state.pruneCandidates(idx / 9, idx % 9, remove))
+                unitProgress = true;
+            }
+            if (unitProgress) {
+              ++techniques.hiddenPairs;
+              return true;
+            }
           }
         }
         return false;

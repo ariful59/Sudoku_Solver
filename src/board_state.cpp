@@ -29,6 +29,7 @@ namespace sudoku::internal {
 
   BoardState::BoardState(const Board& input) {
     board = input.cells;
+    pruneMask.fill(kAllDigitsMask);
     for (int row = 0; row < 9 && valid; ++row) {
       for (int col = 0; col < 9 && valid; ++col) {
         const int value = board[row * 9 + col];
@@ -50,6 +51,9 @@ namespace sudoku::internal {
         boxMask[box] |= bit;
       }
     }
+    if (valid) {
+      RecomputeCandidates();
+    }
   }
 
   bool BoardState::solved() const {
@@ -60,12 +64,7 @@ namespace sudoku::internal {
   }
 
   uint16_t BoardState::candidates(int row, int col) const {
-    if (board[row * 9 + col] != 0)
-      return 0;
-    const int box = BoxIndex(row, col);
-    // candidates are the digits that are not present in the same row, column, or box
-    return static_cast<uint16_t>(kAllDigitsMask &
-      ~(rowMask[row] | colMask[col] | boxMask[box]));
+    return candidateMask[row * 9 + col];
   }
 
   bool BoardState::place(int row, int col, int value) {
@@ -77,11 +76,14 @@ namespace sudoku::internal {
     const int box = BoxIndex(row, col);
     if ((rowMask[row] & bit) || (colMask[col] & bit) || (boxMask[box] & bit))
       return false;
+    if ((candidateMask[idx] & bit) == 0)
+      return false;
 
     board[idx] = value;
     rowMask[row] |= bit;
     colMask[col] |= bit;
     boxMask[box] |= bit;
+    RecomputeCandidates();
     return true;
   }
 
@@ -93,6 +95,38 @@ namespace sudoku::internal {
     rowMask[row] &= static_cast<uint16_t>(~bit);
     colMask[col] &= static_cast<uint16_t>(~bit);
     boxMask[box] &= static_cast<uint16_t>(~bit);
+    RecomputeCandidates();
+  }
+
+  bool BoardState::pruneCandidates(int row, int col, uint16_t removeMask) {
+    const int idx = row * 9 + col;
+    if (board[idx] != 0)
+      return false;
+    const uint16_t before = pruneMask[idx];
+    pruneMask[idx] = static_cast<uint16_t>(pruneMask[idx] & ~removeMask);
+    if (pruneMask[idx] == before)
+      return false;
+    const int box = BoxIndex(row, col);
+    const uint16_t base = static_cast<uint16_t>(kAllDigitsMask &
+      ~(rowMask[row] | colMask[col] | boxMask[box]));
+    candidateMask[idx] = static_cast<uint16_t>(base & pruneMask[idx]);
+    return true;
+  }
+
+  void BoardState::RecomputeCandidates() {
+    for (int row = 0; row < 9; ++row) {
+      for (int col = 0; col < 9; ++col) {
+        const int idx = row * 9 + col;
+        if (board[idx] != 0) {
+          candidateMask[idx] = 0;
+          continue;
+        }
+        const int box = BoxIndex(row, col);
+        const uint16_t base = static_cast<uint16_t>(kAllDigitsMask &
+          ~(rowMask[row] | colMask[col] | boxMask[box]));
+        candidateMask[idx] = static_cast<uint16_t>(base & pruneMask[idx]);
+      }
+    }
   }
 
 } // namespace sudoku::internal

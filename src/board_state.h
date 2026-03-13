@@ -20,6 +20,9 @@ namespace sudoku::internal {
     std::array<uint16_t, 9> rowMask{};
     std::array<uint16_t, 9> colMask{};
     std::array<uint16_t, 9> boxMask{};
+    // Candidate tracking: pruneMask stores allowed digits per cell beyond base constraints.
+    std::array<uint16_t, 81> pruneMask{};
+    std::array<uint16_t, 81> candidateMask{};
     bool valid = true;
 
     explicit BoardState(const Board& input);
@@ -28,6 +31,10 @@ namespace sudoku::internal {
     uint16_t candidates(int row, int col) const;
     bool place(int row, int col, int value);
     void remove(int row, int col, int value);
+    bool pruneCandidates(int row, int col, uint16_t removeMask);
+
+  private:
+    void RecomputeCandidates();
   };
 
 } // namespace sudoku::internal
