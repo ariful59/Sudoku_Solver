@@ -7,6 +7,10 @@ This project is a Sudoku Solver using C++ that can:
 3. Grade puzzle difficulty (`easy`, `medium`, `hard`, `samurai`).
 4. Generate unique puzzles with approximate target difficulty with symmetric option.
 
+
+## High-Level Architecture
+![High-Level Architecture](docs/design.png)
+
 ## Prerequisites
 1. CMake 3.16+
 2. A C++17 compiler (AppleClang, Clang, GCC, or MSVC)
